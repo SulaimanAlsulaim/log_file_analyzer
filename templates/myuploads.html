@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}My Uploads{% endblock %}
+{% block content %}
+<h2>My Uploaded Logs</h2>
+
+{% if logs %}
+  <ul style="list-style-type: none; padding: 0;">
+    {% for log in logs %}
+      <li style="margin-bottom: 15px;">
+        <strong>{{ log.filename }}</strong>  
+        <span style="color: #666;">({{ log.uploaded_at.strftime('%Y-%m-%d %H:%M') }})</span><br>
+        <a href="{{ url_for('download_log', log_id=log.id) }}">Download</a> |
+        <a href="{{ url_for('delete_log', log_id=log.id) }}">Delete</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No uploads found.</p>
+{% endif %}
+
+<p><a href="{{ url_for('upload_file') }}">← Back to Upload</a></p>
+{% endblock %}
