@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Upload Log{% endblock %}
 {% block content %}
-<h2>Upload CSV or JSON Log File</h2>
-<form method="post" enctype="multipart/form-data">
-  <input type="file" name="logfile" required><br>
-  <input type="submit" value="Upload">
-</form>
-<p><a href="/myuploads">View My Uploads</a></p>
+<div class="auth-container">
+  <h2>Upload CSV or JSON Log File</h2>
+  <form method="post" enctype="multipart/form-data" class="auth-form">
+    <input type="file" name="logfile" required><br>
+    <input type="submit" value="Upload">
+  </form>
+  <a class="back-link" href="{{ url_for('my_uploads') }}">View My Uploads</a>
+</div>
 {% endblock %}

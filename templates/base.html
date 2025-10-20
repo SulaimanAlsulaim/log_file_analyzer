@@ -3,45 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}Log Analyzer{% endblock %}</title>
-  <style>
-    body {
-      background: linear-gradient(to right, #e0f7fa, #e1bee7);
-      font-family: 'Segoe UI', sans-serif;
-      color: #1905cc;
-      text-align: center;
-      padding: 370px;
-    }
-    h1, h2 {
-      color: #6a1b9a;
-    }
-    input, select {
-      margin: 8px;
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      width: 250px;
-    }
-    input[type="submit"] {
-      background-color: #6a1b9a;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      cursor: pointer;
-    }
-    input[type="submit"]:hover {
-      background-color: #4a148c;
-    }
-    a {
-      color: #6a1b9a;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
 </head>
 <body>
-  {% block content %}{% endblock %}
+  <header>
+    <h1>Log File Analyzer</h1>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Solaiman & Nawaf & Abdullah</p>
+  </footer>
 </body>
 </html>
