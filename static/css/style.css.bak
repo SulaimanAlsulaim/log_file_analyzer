@@ -1,0 +1,135 @@
+body {
+  background: #000000;
+  font-family: 'Segoe UI', sans-serif;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+   text-align: center;
+}
+
+header, footer {
+  text-align: center;
+  padding: 20px;
+  background:#0ce9cc94;
+  
+  font-weight: bold;
+}
+
+main {
+  background:#030c14;
+  padding: 290px;
+}
+
+h1, h2 {
+  color: #f3f0f5;
+  margin-bottom: 20px;
+}
+
+form {
+  margin-top: 20px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"] {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  width: 100%;
+  max-width: 300px;
+  border-radius: 5px;
+  border: 1px solid #fffcfc;
+}
+
+input[type="submit"] {
+  background-color: #2a00e6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+  background-color: #11f52f;
+}
+
+a {
+  color: #fffafa;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.auth-container {
+  background-color: #0505f1;
+  padding: 30px;
+  max-width: 400px;
+  margin: 60px auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(255, 253, 253, 0.1);
+}
+
+.auth-form input {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.auth-form input[type="submit"] {
+  background-color: #00ff2a;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.auth-form input[type="submit"]:hover {
+  background-color: #4a148c;
+}
+
+.back-link {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.uploads-container {
+  max-width: 600px;
+  margin: 40px auto;
+  text-align: left;
+}
+
+.log-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.log-item {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f3e5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.log-date {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.log-action {
+  color: #9a581b;
+  margin-right: 10px;
+}

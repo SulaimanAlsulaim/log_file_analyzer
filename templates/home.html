@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-<div class="home-container">
-  <h1>Welcome to the Log Analyzer App</h1>
-  <p>This tool helps you upload, view, and analyze your log files securely.</p>
-  <div class="home-links">
-    <a href="{{ url_for('auth.signup') }}" class="button">Sign Up</a>
-    <a href="{{ url_for('auth.signin') }}" class="button">Sign In</a>
-  </div>
-</div>
+	
+		<div class="wrapper">
+			<h2>Log File Analyzer</h2>
+		
+			<div class="buttons">
+				<a href="{{ url_for('auth.signup') }}" class="button-1">Sign up</a>
+				<a href="{{ url_for('auth.signin') }}" class="button-1">Sign in</a>
+			</div>
+		</div>
+	</section>
 {% endblock %}

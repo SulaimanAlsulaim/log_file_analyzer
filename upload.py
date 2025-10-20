@@ -25,9 +25,28 @@ def upload_file():
             return "File type not allowed."
         content = file.read().decode('utf-8')
         log = Log(user_id=session['user_id'], filename=file.filename, raw_log=content, uploaded_at=datetime.utcnow())
+
+        # Save the log file in the database (as csv/json)
         with Session(engine) as db:
             db.add(log)
             db.commit()
+
+   
+             
+            # Pass the log content to the parser Drain
+            # Code for parsing would go here
+            # Output: Same logs but with Event IDs assigned
+
+
+
+        # Extract anomalies from the log file if needed
+            # Code for detecting anomalies would go here
+        
+        # Now we have the results from the model, do something with it.
+    
+
+        
+        
         return redirect(url_for('upload.my_uploads'))
     return render_template_string(UPLOAD_FORM)
 

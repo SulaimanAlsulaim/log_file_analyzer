@@ -1,5 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for, session
 from sqlmodel import Session, select
+from sqlalchemy import or_
 from models import User, engine
 
 auth_bp = Blueprint('auth', __name__)
@@ -23,14 +24,20 @@ def signup():
 @auth_bp.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
+        login_input = request.form['username']  # could be username or email
         password = request.form['password']
+
         with Session(engine) as db:
-            user = db.exec(select(User).where(User.username == username, User.email == email)).first()
+            user = db.exec(
+                select(User).where(
+                    or_(User.username == login_input, User.email == login_input)
+                )
+            ).first()
+
             if user and user.password == password:
                 session['user_id'] = user.id
                 session['username'] = user.username
                 return redirect(url_for('upload_file'))
+
             return "Invalid credentials."
     return render_template("signin.html")
