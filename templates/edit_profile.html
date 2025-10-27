@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<div class="form-container">
+  <h2>Edit Profile</h2>
+  <form method="POST">
+    <label>Username:</label>
+    <input type="text" name="username" value="{{ user.username }}" required>
+
+    <label>Email:</label>
+    <input type="email" name="email" value="{{ user.email }}" required>
+
+    <label>New Password (optional):</label>
+    <input type="password" name="password" placeholder="Enter new password">
+
+    <button type="submit">Save Changes</button>
+  </form>
+</div>
+{% endblock %}

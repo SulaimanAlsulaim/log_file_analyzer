@@ -236,7 +236,7 @@ header#top nav ul li a.nav-cta {
 #banner {
 	height: 840px;
 	background:
-	 linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)),  #f1f6f4 url("https://www.shutterstock.com/image-photo/cyber-security-password-login-online-600nw-2287118659.jpg") no-repeat center;
+	 linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)),  #f1f6f4 url("/static/images/banner-bg.jpg") no-repeat center;
 	position: relative;
 	padding: 1px 0 0 0;
   background-size: cover;

@@ -31,10 +31,18 @@
 					<li><a href="/">Home</a></li>
 					<li><a href="#about">About Us</a></li>
 					<li><a href="#services">Services</a></li>
+					 {% if session.get('username') %}
+      <li><a href="/dashboard">{{ session['username'] }}</a></li>
+      <li><a href="{{ url_for('auth.signout') }}">Logout</a></li>
+    {% else %}
+      <li><a href="/sign">Sign in / Sign up</a></li>
+    {% endif %}
           <!--
 					<li><a href="#portfolio">Portfolio</a></li>
 					<li><a class="nav-cta" href="#">Try Now</a></li>
           -->
+
+		   
 				</ul>
 			</nav>
 		</div>

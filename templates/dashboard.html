@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard">
+  <h2>Welcome, {{ session['username'] }}!</h2>
+  <!--- <p style="text-align: center;">What would you like to do?</p>
+-->	
+
+  <div style="text-align: center;" class="buttons">
+    <a href="{{ url_for('upload_file') }}" class="button-1">Upload File</a>
+    <a href="{{ url_for('my_uploads') }}" class="button-1">My Uploads</a>
+    <a href="{{ url_for('auth.edit_profile') }}" class="button-1">Edit Profile</a>
+    <a href="{{ url_for('analysis_result') }}" class="button-1">Analysis Result</a>
+  </div>
+</div>
+{% endblock %}

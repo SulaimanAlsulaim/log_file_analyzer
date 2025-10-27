@@ -67,12 +67,30 @@ def delete_log(log_id):
             db.commit()
     return redirect(url_for('my_uploads'))
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
 @app.route('/sign')
 def sign():
     return render_template('sign.html')
 
-if __name__ == '__main__':
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.signin'))
+
+    return render_template('dashboard.html')
+
+@app.route('/analysis_result')
+def analysis_result():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.signin'))
+
+    return render_template('analysis_result.html')
+
+
+
+
+
+
+   
+if __name__ == "__main__":
     app.run(debug=True)
+

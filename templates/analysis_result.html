@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Analysis Result{% endblock %}
+{% block content %}
+<div class="analysis-page">
+  <h2>Analysis Results</h2>
+  <p>This page will display your Power BI dashboard.</p>
+
+  <!-- Placeholder for Power BI Embed -->
+  <iframe 
+      src="https://app.powerbi.com/view?r=YOUR_POWER_BI_REPORT_ID"
+      width="100%"
+      height="600px"
+      frameborder="0"
+      allowFullScreen="true">
+  </iframe>
+</div>
+{% endblock %}
