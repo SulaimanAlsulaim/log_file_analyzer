@@ -2,65 +2,43 @@
 {% block title %}My Uploads{% endblock %}
 {% block content %}
 <div class="uploads-container">
-  <h2 style="margin-bottom: 200px;">My Uploaded Logs</h2>
-
- <!--  {% if logs %}
-    <ul class="log-list">
-      {% for log in logs %}
-        <li class="log-item">
-          <strong>{{ log.filename }}</strong>
-          <span class="log-date">({{ log.uploaded_at.strftime('%Y-%m-%d %H:%M') }})</span><br>
-          <a href="{{ url_for('download_log', log_id=log.id) }}" class="log-action">Download</a> |
-          <a href="{{ url_for('delete_log', log_id=log.id) }}" class="log-action">Delete</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No uploads found.</p>
-  {% endif %}
--->
- 
-</div>
+  <h2 style="margin-bottom: 40px;">My Uploaded Logs</h2>
 
   <div class="card">
-
     <div class="card-body">
-{% if logs %}
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">File Name</th>
-      <th scope="col">Upload Date</th>
-      <th scope="col">Options</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for log in logs %}
-    <tr>
-      <td>{{ log.filename }}</td>
-      <td>{{ log.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</td>
-      <td>
-  <a class="dropdown-item" href="{{ url_for('download_log', log_id=log.id) }}">
-    <button type="button" class="btn btn-primary">Download</button>
-  </a>
-  <br>
-  <a class="dropdown-item" href="{{ url_for('delete_log', log_id=log.id) }}">
-    <button type="button" class="btn btn-danger">Delete</button>
-  </a>
-
-  
-
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-    <p>No uploads found.</p>
-{% endif %}
-
+      {% if uploads %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>File Name</th>
+            <th>Size</th>
+            <th>Upload Date</th>
+            <th>Options</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for upload in uploads %}
+          <tr>
+            <td>{{ upload.filename }}</td>
+            <td>{{ upload.size_readable }}</td>
+            <td>{{ upload.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>
+              <a href="{{ url_for('download_upload', upload_id=upload.id) }}">
+                <button class="btn btn-primary btn-sm">Download</button>
+              </a>
+              <a href="{{ url_for('delete_upload', upload_id=upload.id) }}">
+                <button class="btn btn-danger btn-sm">Delete</button>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>No uploads found.</p>
+      {% endif %}
     </div>
   </div>
- <a class="back-link" href="{{ url_for('upload_file') }}">← Back to Upload</a>
-
+  <a class="back-link" href="{{ url_for('upload_file') }}">← Back to Upload</a>
+</div>
 {% endblock %}
