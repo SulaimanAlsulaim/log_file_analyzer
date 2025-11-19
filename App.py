@@ -1,224 +1,150 @@
-from flask import Flask, request, render_template, redirect, url_for, session, Response
-from sqlmodel import SQLModel, Session as DBSession, select, create_engine
-from models import User, Upload
-from auth import auth_bp
-from upload import upload_bp          # Import upload blueprint
-from datetime import datetime
-import os
-import pandas as pd
-import io
-import json
+from flask import Blueprint, request, render_template, redirect, url_for, session, flash
+from sqlmodel import Session, select
+from sqlalchemy import or_
+from werkzeug.security import generate_password_hash, check_password_hash
+from models import User, engine
+import re
 
-# ------------------------------------------
-# Flask Setup
-# ------------------------------------------
-app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
 
-# Register Blueprints
-app.register_blueprint(auth_bp)
-app.register_blueprint(upload_bp)
+auth_bp = Blueprint('auth', __name__)
 
-# Database
-DATABASE_URL = "sqlite:///users.db"
-engine = create_engine(DATABASE_URL)
+# ✅ Password strength validator
+def is_strong_password(password):
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters long."
+    if not re.search(r"[A-Z]", password):
+        return False, "Password must contain at least one uppercase letter."
+    if not re.search(r"[a-z]", password):
+        return False, "Password must contain at least one lowercase letter."
+    if not re.search(r"[0-9]", password):
+        return False, "Password must contain at least one number."
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        return False, "Password must contain at least one special character."
+    return True, ""
 
-if not os.path.exists("users.db"):
-    SQLModel.metadata.create_all(engine)
 
-# ------------------------------------------
-# Drain3 (Used for analysis pages only)
-# ------------------------------------------
-from drain3 import TemplateMiner
-from drain3.template_miner_config import TemplateMinerConfig
-from drain3.file_persistence import FilePersistence
+# ✅ Signup route
+@auth_bp.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username'].strip()
+        email = request.form['email'].strip().lower()
+        password = request.form['password']
 
-STATE_FILE = "drain3_state.bin"
+        if not password:
+            flash("Password is required.", "error")
+            return render_template("signup.html")
 
-def build_template_miner(state_path=STATE_FILE):
-    cfg = TemplateMinerConfig()
-    cfg.profiling_enabled = False
-    cfg.drain_sim_th = 0.4
-    cfg.drain_depth = 4
-    cfg.drain_max_children = 100
-    cfg.drain_max_clusters = 20000
-    cfg.drain_extra_delimiters = ";,()"
-    cfg.drain_param_str = "<*>"
+        valid, message = is_strong_password(password)
+        if not valid:
+            flash(message, "error")
+            return render_template("signup.html")
 
-    folder = os.path.dirname(state_path)
-    if folder and not os.path.exists(folder):
-        os.makedirs(folder, exist_ok=True)
+        with Session(engine) as db:
+            if db.exec(select(User).where(User.username == username)).first():
+                flash("Username already exists.", "error")
+                return render_template("signup.html")
 
-    persistence = FilePersistence(state_path)
-    return TemplateMiner(persistence, cfg)
+            if db.exec(select(User).where(User.email == email)).first():
+                flash("Email already registered.", "error")
+                return render_template("signup.html")
 
-def parse_log_lines(lines, tm):
-    rows = []
-    for i, line in enumerate(lines):
-        line = line.strip()
-        if not line:
-            continue
-
-        result = tm.add_log_message(line)
-        rows.append({
-            "LineId": i,
-            "Content": line,
-            "EventId": result["cluster_id"],
-            "EventTemplate": result["template_mined"]
-        })
-    return pd.DataFrame(rows)
-
-# ------------------------------------------
-# Home Page
-# ------------------------------------------
-@app.route('/')
-def home():
-    return render_template("home.html")
-
-# ------------------------------------------
-# My Uploads Page
-# ------------------------------------------
-@app.route('/myuploads')
-def my_uploads():
-    if 'user_id' not in session:
-        return redirect(url_for('auth.signin'))
-
-    with DBSession(engine) as db:
-        uploads = db.exec(
-            select(Upload).where(Upload.user_id == session['user_id'])
-        ).all()
-
-    return render_template("myuploads.html", uploads=uploads)
-
-# ------------------------------------------
-# Download Raw Log
-# ------------------------------------------
-@app.route('/download/<int:upload_id>')
-def download_upload(upload_id):
-    if 'user_id' not in session:
-        return redirect(url_for('auth.signin'))
-
-    with DBSession(engine) as db:
-        upload = db.exec(
-            select(Upload)
-            .where(Upload.id == upload_id, Upload.user_id == session['user_id'])
-        ).first()
-
-    if not upload:
-        return "File not found."
-
-    return Response(
-        upload.raw_log,
-        mimetype="text/plain",
-        headers={"Content-Disposition": f"attachment;filename={upload.filename}"}
-    )
-
-# ------------------------------------------
-# Download Structured CSV
-# ------------------------------------------
-@app.route('/download_structured/<int:upload_id>')
-def download_structured(upload_id):
-    if 'user_id' not in session:
-        return redirect(url_for('auth.signin'))
-
-    with DBSession(engine) as db:
-        upload = db.exec(
-            select(Upload)
-            .where(Upload.id == upload_id, Upload.user_id == session['user_id'])
-        ).first()
-
-    if not upload or not upload.structured_log:
-        return "No structured log found."
-
-    df = upload.get_structured()
-    csv_content = df.to_csv(index=False)
-
-    return Response(
-        csv_content,
-        mimetype="text/csv",
-        headers={"Content-Disposition": f"attachment;filename=structured_{upload.filename}.csv"}
-    )
-
-# ------------------------------------------
-# Delete Uploaded File
-# ------------------------------------------
-@app.route('/delete/<int:upload_id>')
-def delete_upload(upload_id):
-    if 'user_id' not in session:
-        return redirect(url_for('auth.signin'))
-
-    with DBSession(engine) as db:
-        upload = db.exec(
-            select(Upload)
-            .where(Upload.id == upload_id, Upload.user_id == session['user_id'])
-        ).first()
-
-        if upload:
-            db.delete(upload)
+            hashed = generate_password_hash(password)
+            db.add(User(username=username, email=email, password=hashed))
             db.commit()
 
-    return redirect(url_for('my_uploads'))
-
-# ------------------------------------------
-# Sign-in Page
-# ------------------------------------------
-@app.route('/sign')
-def sign():
-    return render_template('sign.html')
-
-# ------------------------------------------
-# Dashboard Page
-# ------------------------------------------
-@app.route('/dashboard')
-def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('auth.signin'))
-    return render_template('dashboard.html')
-
-# ------------------------------------------
-# Analysis Result (List View)
-# ------------------------------------------
-@app.route('/analysis_result')
-def analysis_result():
-    if 'user_id' not in session:
+        # ❌ No success message shown
         return redirect(url_for('auth.signin'))
 
-    with DBSession(engine) as db:
-        uploads = db.exec(
-            select(Upload).where(Upload.user_id == session['user_id'])
-        ).all()
+    return render_template("signup.html")
 
-    return render_template('analysis_result.html', uploads=uploads)
 
-# ------------------------------------------
-# Individual Log Analysis View
-# ------------------------------------------
-@app.route('/analysis_result/<int:upload_id>')
-def show_analysis(upload_id):
+# ✅ Signin route
+@auth_bp.route('/signin', methods=['GET', 'POST'])
+def signin():
+    if request.method == 'POST':
+        login_input = request.form['username'].strip()
+        password = request.form['password']
+
+        with Session(engine) as db:
+            user = db.exec(
+                select(User).where(
+                    or_(User.username == login_input, User.email == login_input)
+                )
+            ).first()
+
+            if user and check_password_hash(user.password, password):
+                session['user_id'] = user.id
+                session['username'] = user.username
+                return redirect(url_for('dashboard'))
+
+            flash("Invalid username/email or password.", "error")
+
+    return render_template("signin.html")
+
+
+# ✅ Signout route
+@auth_bp.route('/signout')
+def signout():
+    session.clear()
+    flash("Signed out successfully.", "success")
+    return redirect(url_for('home'))
+
+
+# ✅ Edit Profile route
+@auth_bp.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
     if 'user_id' not in session:
         return redirect(url_for('auth.signin'))
 
-    with DBSession(engine) as db:
-        upload = db.exec(
-            select(Upload)
-            .where(Upload.id == upload_id, Upload.user_id == session['user_id'])
-        ).first()
+    with Session(engine) as db:
+        user = db.get(User, session['user_id'])
+        if not user:
+            session.clear()
+            return redirect(url_for('auth.signin'))
 
-    if not upload:
-        return "Analysis not found."
+        if request.method == 'POST':
+            current_password = request.form.get('current_password', '')
+            new_username = request.form.get('username', '').strip()
+            new_email = request.form.get('email', '').strip().lower()
+            new_password = request.form.get('new_password', '').strip()
 
-    power_bi_embed_url = f"https://app.powerbi.com/view?r=EXAMPLE_EMBED_ID_FOR_{upload.id}"
+            # Verify current password
+            if not check_password_hash(user.password, current_password):
+                flash("Current password is incorrect.", "error")
+                return render_template('edit_profile.html', user=user)
 
-    return render_template(
-        'analysis_view.html',
-        upload=upload,
-        power_bi_embed_url=power_bi_embed_url
-    )
+            # Update username
+            if new_username:
+                existing = db.exec(select(User).where(User.username == new_username, User.id != user.id)).first()
+                if existing:
+                    flash("Username already taken.", "error")
+                    return render_template('edit_profile.html', user=user)
+                user.username = new_username
 
-# ------------------------------------------
+            # Update email
+            if new_email:
+                existing = db.exec(select(User).where(User.email == new_email, User.id != user.id)).first()
+                if existing:
+                    flash("Email already in use.", "error")
+                    return render_template('edit_profile.html', user=user)
+                user.email = new_email
 
-# ------------------------------------------
-# Run App
-# ------------------------------------------
-if __name__ == "__main__":
-    app.run(debug=True)
+            # Update password (if provided)
+            if new_password:
+                valid, message = is_strong_password(new_password)
+                if not valid:
+                    flash(message, "error")
+                    return render_template('edit_profile.html', user=user)
+
+                user.password = generate_password_hash(new_password)
+
+            db.add(user)
+            db.commit()
+            session['username'] = user.username
+
+            # ✅ Stay on the same page and show success message above form
+            flash("Profile updated successfully.", "success")
+            return render_template('edit_profile.html', user=user)
+
+    return render_template('edit_profile.html', user=user)
