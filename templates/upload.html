@@ -2,30 +2,26 @@
 {% block title %}Upload Log{% endblock %}
 {% block content %}
 <div class="auth-container">
-  <!--<h2>Upload CSV or JSON Log File</h2>-->
   <div class="container mt-5 mb-5" style="width: 50%;">
-      <div class="card">
-    <div class="card-body">
-  <form method="post" enctype="multipart/form-data" class="auth-form">
-<div class="mb-3">
-  <label for="formFile" class="form-label">Upload CSV or JSON Log File</label>
-  <input class="form-control" type="file" id="formFile" name="logfile" required>
-</div>
-  
-    <button type="submit" value="Upload" class="btn btn-primary" style="width: 100%;">Submit</button>
-    
-  </form>
+    <div class="card">
+      <div class="card-body">
+        
+        <form method="post" enctype="multipart/form-data" class="auth-form">
+          <div class="mb-3">
+            <label for="formFile" class="form-label">Upload CSV or JSON Log File</label>
+            <input class="form-control" type="file" id="formFile" name="logfile" required>
+          </div>
 
+          <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </form>
 
-    <a class="back-link" href="{{ url_for('my_uploads') }}">
-      <button type="submit" value="Upload" class="btn btn-secondary mt-3" style="width: 100%;">View My Uploads</button>
-    </a>
+        <!-- FIXED BLUEPRINT ENDPOINT -->
+        <a class="back-link" href="{{ url_for('upload.my_uploads') }}">
+          <button class="btn btn-secondary mt-3 w-100">View My Uploads</button>
+        </a>
 
+      </div>
     </div>
   </div>
-
-  </div>
-
- 
 </div>
 {% endblock %}
