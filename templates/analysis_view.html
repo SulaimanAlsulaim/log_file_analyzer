@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}{{ log.filename }} Analysis{% endblock %}
+{% block title %}{{ upload.filename }} Analysis{% endblock %}
 {% block content %}
 <div class="container mt-5 mb-5" style="max-width: 1000px;">
   <div class="card">
     <div class="card-body">
-      <h4 class="mb-4 text-center">Analysis Result for {{ log.filename }}</h4>
+      <h4 class="mb-4 text-center">Analysis Result for {{ upload.filename }}</h4>
       <div class="ratio ratio-16x9">
         <iframe src="{{ power_bi_embed_url }}" frameborder="0" allowfullscreen></iframe>
       </div>
