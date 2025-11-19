@@ -19,8 +19,38 @@
 	
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script type="text/javascript" src="js/featherlight.min.js"></script> 
+	
+
+<style>
+.password-wrapper {
+    position: relative;
+}
+.password-eye {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 20px;
+    user-select: none;
+}
+</style>
+
 
 </head>
+<script>
+function togglePassword(id, icon) {
+    const input = document.getElementById(id);
+    if (input.type === "password") {
+        input.type = "text";
+        icon.textContent = "🙈"; 
+    } else {
+        input.type = "password";
+        icon.textContent = "👁️";
+    }
+}
+</script>
+
 <body>
   <section id="banner"><a name="home"></a>
 	<header id="top">
@@ -58,3 +88,4 @@
 
 </body>
 </html>
+
