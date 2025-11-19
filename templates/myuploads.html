@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+
 {% block title %}My Uploads{% endblock %}
+
 {% block content %}
 <div class="uploads-container">
   <h2 style="margin-bottom: 40px;">My Uploaded Logs</h2>
@@ -23,12 +25,34 @@
             <td>{{ upload.size_readable }}</td>
             <td>{{ upload.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</td>
             <td>
-              <a href="{{ url_for('download_upload', upload_id=upload.id) }}">
-                <button class="btn btn-primary btn-sm">Download</button>
-              </a>
+
+              <div class="btn-group">
+                <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                  Download
+                </button>
+
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" href="{{ url_for('download_upload', upload_id=upload.id) }}">
+                      Raw Log
+                    </a>
+                  </li>
+
+                  {% if upload.structured_log %}
+                  <li>
+                    <a class="dropdown-item" href="{{ url_for('upload.download_result', log_id=upload.id) }}">
+                      Result Log
+                    </a>
+                  </li>
+                  {% endif %}
+
+                </ul>
+              </div>
+
               <a href="{{ url_for('delete_upload', upload_id=upload.id) }}">
                 <button class="btn btn-danger btn-sm">Delete</button>
               </a>
+
             </td>
           </tr>
           {% endfor %}
@@ -39,6 +63,7 @@
       {% endif %}
     </div>
   </div>
-  <a class="back-link" href="{{ url_for('upload_file') }}">← Back to Upload</a>
+
+  <a class="back-link" href="{{ url_for('upload.upload_file') }}">← Back to Upload</a>
 </div>
 {% endblock %}
